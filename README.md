@@ -1,6 +1,19 @@
+## 🚀 Live Dashboard
+
+🔗 **[View Live Supermarket Sales Dashboard](https://supermarket-sales-analysis-ylm3z2typgyyftsb8qjey7.streamlit.app/)**
+
+> Explore the interactive dashboard with sales KPIs, product performance, customer insights, branch analysis, and business recommendations.
+
 # 🛒 Supermarket Sales Analysis
 
+## 🚀 Live Dashboard
+
+🔗 **[View Live Supermarket Sales Dashboard](https://supermarket-sales-analysis-ylm3z2typgyyftsb8qjey7.streamlit.app/)**
+
+> Explore the interactive dashboard with sales KPIs, product performance, customer insights, branch analysis, and business recommendations.
+
 ## 📌 Project Overview
+...
 
 This project analyzes supermarket sales data to understand sales performance, customer behavior, product performance, payment methods, and monthly sales trends using Python.
 
