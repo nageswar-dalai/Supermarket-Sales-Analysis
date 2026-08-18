@@ -52,6 +52,8 @@ p {
     color: #cbd5e1;
 }
 
+/* KPI Cards */
+
 [data-testid="stMetric"] {
     background: linear-gradient(
         145deg,
@@ -74,6 +76,8 @@ p {
     font-weight: 800;
 }
 
+/* Sidebar */
+
 [data-testid="stSidebar"] {
     background: #0b1220;
     border-right: 1px solid #334155;
@@ -88,6 +92,8 @@ p {
     color: #94a3b8 !important;
 }
 
+/* Download Button */
+
 .stDownloadButton > button {
     background: #2563eb;
     color: white;
@@ -101,9 +107,28 @@ p {
     background: #1d4ed8;
 }
 
+/* Divider */
+
 hr {
     border-color: #334155;
 }
+
+/* Expander */
+
+[data-testid="stExpander"] {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid #334155;
+    border-radius: 14px;
+    margin-bottom: 14px;
+}
+
+[data-testid="stExpander"] summary {
+    color: #f8fafc !important;
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+/* Insight Cards */
 
 .insight-card {
     background: linear-gradient(
@@ -140,8 +165,16 @@ hr {
 .section-note {
     color: #94a3b8;
     font-size: 0.95rem;
-    margin-top: -10px;
+    margin-top: -5px;
     margin-bottom: 15px;
+}
+
+/* Footer */
+
+.footer {
+    text-align: center;
+    color: #64748b;
+    padding: 25px;
 }
 
 </style>
@@ -283,7 +316,7 @@ st.caption(
 )
 
 # =========================================================
-# CHART THEME FUNCTION
+# CHART THEME
 # =========================================================
 
 def style_chart(fig):
@@ -325,472 +358,458 @@ def style_chart(fig):
     return fig
 
 # =========================================================
-# SALES OVERVIEW
+# 1. SALES OVERVIEW
 # =========================================================
 
-st.markdown("---")
-
-st.header("📊 Sales Overview")
-
-st.markdown(
-    '<p class="section-note">Monthly sales performance based on selected filters.</p>',
-    unsafe_allow_html=True
-)
-
-month_order = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-]
-
-monthly_sales = (
-    filtered_df
-    .groupby("Month_Name")["Sales"]
-    .sum()
-    .reindex(month_order)
-    .dropna()
-    .reset_index()
-)
-
-fig_month = px.line(
-    monthly_sales,
-    x="Month_Name",
-    y="Sales",
-    markers=True,
-    title="Monthly Sales Trend"
-)
-
-fig_month.update_layout(
-    xaxis_title="Month",
-    yaxis_title="Total Sales"
-)
-
-fig_month = style_chart(fig_month)
-
-st.plotly_chart(
-    fig_month,
-    use_container_width=True
-)
-
-# =========================================================
-# PRODUCT & BRANCH PERFORMANCE
-# =========================================================
-
-st.markdown("---")
-
-st.header("🏆 Product & Branch Performance")
-
-col1, col2 = st.columns(2)
-
-# Product Sales
-
-product_sales = (
-    filtered_df
-    .groupby("Product line")["Sales"]
-    .sum()
-    .sort_values(ascending=True)
-    .reset_index()
-)
-
-fig_product = px.bar(
-    product_sales,
-    x="Sales",
-    y="Product line",
-    orientation="h",
-    title="Sales by Product Line",
-    text_auto=".2s"
-)
-
-fig_product.update_layout(
-    xaxis_title="Total Sales",
-    yaxis_title="Product Line"
-)
-
-fig_product = style_chart(fig_product)
-
-col1.plotly_chart(
-    fig_product,
-    use_container_width=True
-)
-
-# Branch Sales
-
-branch_sales = (
-    filtered_df
-    .groupby("Branch")["Sales"]
-    .sum()
-    .sort_values(ascending=False)
-    .reset_index()
-)
-
-fig_branch = px.bar(
-    branch_sales,
-    x="Branch",
-    y="Sales",
-    title="Sales by Branch",
-    text_auto=".2s"
-)
-
-fig_branch.update_layout(
-    xaxis_title="Branch",
-    yaxis_title="Total Sales"
-)
-
-fig_branch = style_chart(fig_branch)
-
-col2.plotly_chart(
-    fig_branch,
-    use_container_width=True
-)
-
-# =========================================================
-# CUSTOMER & PAYMENT ANALYSIS
-# =========================================================
-
-st.markdown("---")
-
-st.header("👥 Customer & Payment Analysis")
-
-col1, col2 = st.columns(2)
-
-# Customer Type
-
-customer_sales = (
-    filtered_df
-    .groupby("Customer type")["Sales"]
-    .sum()
-    .reset_index()
-)
-
-fig_customer = px.pie(
-    customer_sales,
-    names="Customer type",
-    values="Sales",
-    title="Sales by Customer Type",
-    hole=0.45
-)
-
-fig_customer = style_chart(fig_customer)
-
-col1.plotly_chart(
-    fig_customer,
-    use_container_width=True
-)
-
-# Payment Method
-
-payment_sales = (
-    filtered_df
-    .groupby("Payment")["Sales"]
-    .sum()
-    .sort_values(ascending=False)
-    .reset_index()
-)
-
-fig_payment = px.bar(
-    payment_sales,
-    x="Payment",
-    y="Sales",
-    title="Sales by Payment Method",
-    text_auto=".2s"
-)
-
-fig_payment.update_layout(
-    xaxis_title="Payment Method",
-    yaxis_title="Total Sales"
-)
-
-fig_payment = style_chart(fig_payment)
-
-col2.plotly_chart(
-    fig_payment,
-    use_container_width=True
-)
-
-# =========================================================
-# CUSTOMER DEMOGRAPHICS & RATING
-# =========================================================
-
-st.markdown("---")
-
-st.header("👤 Customer Demographics & Rating")
-
-col1, col2 = st.columns(2)
-
-# Gender Sales
-
-gender_sales = (
-    filtered_df
-    .groupby("Gender")["Sales"]
-    .sum()
-    .reset_index()
-)
-
-fig_gender = px.bar(
-    gender_sales,
-    x="Gender",
-    y="Sales",
-    title="Sales by Gender",
-    text_auto=".2s"
-)
-
-fig_gender.update_layout(
-    xaxis_title="Gender",
-    yaxis_title="Total Sales"
-)
-
-fig_gender = style_chart(fig_gender)
-
-col1.plotly_chart(
-    fig_gender,
-    use_container_width=True
-)
-
-# Rating
-
-rating_product = (
-    filtered_df
-    .groupby("Product line")["Rating"]
-    .mean()
-    .sort_values(ascending=False)
-    .reset_index()
-)
-
-fig_rating = px.bar(
-    rating_product,
-    x="Rating",
-    y="Product line",
-    orientation="h",
-    title="Average Rating by Product Line",
-    text_auto=".2f"
-)
-
-fig_rating.update_layout(
-    xaxis_title="Average Rating",
-    yaxis_title="Product Line"
-)
-
-fig_rating = style_chart(fig_rating)
-
-col2.plotly_chart(
-    fig_rating,
-    use_container_width=True
-)
-
-# =========================================================
-# BUSINESS INSIGHTS
-# =========================================================
-
-st.markdown("---")
-
-st.header("💡 Key Business Insights")
-
-product_group = (
-    filtered_df
-    .groupby("Product line")["Sales"]
-    .sum()
-)
-
-branch_group = (
-    filtered_df
-    .groupby("Branch")["Sales"]
-    .sum()
-)
-
-customer_group = (
-    filtered_df
-    .groupby("Customer type")["Sales"]
-    .sum()
-)
-
-payment_group = (
-    filtered_df
-    .groupby("Payment")["Sales"]
-    .sum()
-)
-
-best_product = product_group.idxmax()
-best_product_sales = product_group.max()
-
-best_branch = branch_group.idxmax()
-best_branch_sales = branch_group.max()
-
-best_customer = customer_group.idxmax()
-
-best_payment = payment_group.idxmax()
-
-# Insight cards
-
-i1, i2, i3 = st.columns(3)
-
-with i1:
+with st.expander("📊 Sales Overview", expanded=True):
 
     st.markdown(
-        f"""
-        <div class="insight-card">
-
-        <div class="insight-title">
-        🏆 TOP PRODUCT LINE
-        </div>
-
-        <div class="insight-value">
-        {best_product}
-        </div>
-
-        <div class="insight-small">
-        Sales: ${best_product_sales:,.2f}
-        </div>
-
-        </div>
-        """,
+        '<p class="section-note">'
+        'Monthly sales performance based on selected filters.'
+        '</p>',
         unsafe_allow_html=True
     )
 
-with i2:
+    month_order = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+    ]
+
+    monthly_sales = (
+        filtered_df
+        .groupby("Month_Name")["Sales"]
+        .sum()
+        .reindex(month_order)
+        .dropna()
+        .reset_index()
+    )
+
+    fig_month = px.line(
+        monthly_sales,
+        x="Month_Name",
+        y="Sales",
+        markers=True,
+        title="Monthly Sales Trend"
+    )
+
+    fig_month.update_layout(
+        xaxis_title="Month",
+        yaxis_title="Total Sales"
+    )
+
+    fig_month = style_chart(fig_month)
+
+    st.plotly_chart(
+        fig_month,
+        use_container_width=True
+    )
+
+# =========================================================
+# 2. PRODUCT & BRANCH PERFORMANCE
+# =========================================================
+
+with st.expander("🏆 Product & Branch Performance"):
+
+    col1, col2 = st.columns(2)
+
+    # Product Sales
+
+    product_sales = (
+        filtered_df
+        .groupby("Product line")["Sales"]
+        .sum()
+        .sort_values(ascending=True)
+        .reset_index()
+    )
+
+    fig_product = px.bar(
+        product_sales,
+        x="Sales",
+        y="Product line",
+        orientation="h",
+        title="Sales by Product Line",
+        text_auto=".2s"
+    )
+
+    fig_product.update_layout(
+        xaxis_title="Total Sales",
+        yaxis_title="Product Line"
+    )
+
+    fig_product = style_chart(fig_product)
+
+    col1.plotly_chart(
+        fig_product,
+        use_container_width=True
+    )
+
+    # Branch Sales
+
+    branch_sales = (
+        filtered_df
+        .groupby("Branch")["Sales"]
+        .sum()
+        .sort_values(ascending=False)
+        .reset_index()
+    )
+
+    fig_branch = px.bar(
+        branch_sales,
+        x="Branch",
+        y="Sales",
+        title="Sales by Branch",
+        text_auto=".2s"
+    )
+
+    fig_branch.update_layout(
+        xaxis_title="Branch",
+        yaxis_title="Total Sales"
+    )
+
+    fig_branch = style_chart(fig_branch)
+
+    col2.plotly_chart(
+        fig_branch,
+        use_container_width=True
+    )
+
+# =========================================================
+# 3. CUSTOMER & PAYMENT ANALYSIS
+# =========================================================
+
+with st.expander("👥 Customer & Payment Analysis"):
+
+    col1, col2 = st.columns(2)
+
+    # Customer Type
+
+    customer_sales = (
+        filtered_df
+        .groupby("Customer type")["Sales"]
+        .sum()
+        .reset_index()
+    )
+
+    fig_customer = px.pie(
+        customer_sales,
+        names="Customer type",
+        values="Sales",
+        title="Sales by Customer Type",
+        hole=0.45
+    )
+
+    fig_customer = style_chart(fig_customer)
+
+    col1.plotly_chart(
+        fig_customer,
+        use_container_width=True
+    )
+
+    # Payment Method
+
+    payment_sales = (
+        filtered_df
+        .groupby("Payment")["Sales"]
+        .sum()
+        .sort_values(ascending=False)
+        .reset_index()
+    )
+
+    fig_payment = px.bar(
+        payment_sales,
+        x="Payment",
+        y="Sales",
+        title="Sales by Payment Method",
+        text_auto=".2s"
+    )
+
+    fig_payment.update_layout(
+        xaxis_title="Payment Method",
+        yaxis_title="Total Sales"
+    )
+
+    fig_payment = style_chart(fig_payment)
+
+    col2.plotly_chart(
+        fig_payment,
+        use_container_width=True
+    )
+
+# =========================================================
+# 4. CUSTOMER DEMOGRAPHICS & RATING
+# =========================================================
+
+with st.expander("👤 Customer Demographics & Rating"):
+
+    col1, col2 = st.columns(2)
+
+    # Gender Sales
+
+    gender_sales = (
+        filtered_df
+        .groupby("Gender")["Sales"]
+        .sum()
+        .reset_index()
+    )
+
+    fig_gender = px.bar(
+        gender_sales,
+        x="Gender",
+        y="Sales",
+        title="Sales by Gender",
+        text_auto=".2s"
+    )
+
+    fig_gender.update_layout(
+        xaxis_title="Gender",
+        yaxis_title="Total Sales"
+    )
+
+    fig_gender = style_chart(fig_gender)
+
+    col1.plotly_chart(
+        fig_gender,
+        use_container_width=True
+    )
+
+    # Rating
+
+    rating_product = (
+        filtered_df
+        .groupby("Product line")["Rating"]
+        .mean()
+        .sort_values(ascending=False)
+        .reset_index()
+    )
+
+    fig_rating = px.bar(
+        rating_product,
+        x="Rating",
+        y="Product line",
+        orientation="h",
+        title="Average Rating by Product Line",
+        text_auto=".2f"
+    )
+
+    fig_rating.update_layout(
+        xaxis_title="Average Rating",
+        yaxis_title="Product Line"
+    )
+
+    fig_rating = style_chart(fig_rating)
+
+    col2.plotly_chart(
+        fig_rating,
+        use_container_width=True
+    )
+
+# =========================================================
+# 5. BUSINESS INSIGHTS
+# =========================================================
+
+with st.expander("💡 Key Business Insights"):
+
+    product_group = (
+        filtered_df
+        .groupby("Product line")["Sales"]
+        .sum()
+    )
+
+    branch_group = (
+        filtered_df
+        .groupby("Branch")["Sales"]
+        .sum()
+    )
+
+    customer_group = (
+        filtered_df
+        .groupby("Customer type")["Sales"]
+        .sum()
+    )
+
+    payment_group = (
+        filtered_df
+        .groupby("Payment")["Sales"]
+        .sum()
+    )
+
+    best_product = product_group.idxmax()
+    best_product_sales = product_group.max()
+
+    best_branch = branch_group.idxmax()
+    best_branch_sales = branch_group.max()
+
+    best_customer = customer_group.idxmax()
+
+    best_payment = payment_group.idxmax()
+
+    # Insight cards
+
+    i1, i2, i3 = st.columns(3)
+
+    with i1:
+
+        st.markdown(
+            f"""
+            <div class="insight-card">
+
+            <div class="insight-title">
+            🏆 TOP PRODUCT LINE
+            </div>
+
+            <div class="insight-value">
+            {best_product}
+            </div>
+
+            <div class="insight-small">
+            Sales: ${best_product_sales:,.2f}
+            </div>
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    with i2:
+
+        st.markdown(
+            f"""
+            <div class="insight-card">
+
+            <div class="insight-title">
+            🏢 TOP BRANCH
+            </div>
+
+            <div class="insight-value">
+            Branch {best_branch}
+            </div>
+
+            <div class="insight-small">
+            Sales: ${best_branch_sales:,.2f}
+            </div>
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    with i3:
+
+        st.markdown(
+            f"""
+            <div class="insight-card">
+
+            <div class="insight-title">
+            👥 TOP CUSTOMER TYPE
+            </div>
+
+            <div class="insight-value">
+            {best_customer}
+            </div>
+
+            <div class="insight-small">
+            Top Payment: {best_payment}
+            </div>
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    st.markdown("### 📌 Business Recommendations")
+
+    recommendations = [
+        f"Focus marketing efforts on **{best_product}**, the highest-selling product line.",
+        f"Analyze the strategies of **Branch {best_branch}**, the strongest-performing branch.",
+        f"Strengthen loyalty initiatives for the **{best_customer}** customer segment.",
+        f"Monitor **{best_payment}** payment usage and maintain convenient payment options."
+    ]
+
+    for recommendation in recommendations:
+
+        st.markdown(
+            f"• {recommendation}"
+        )
+
+# =========================================================
+# 6. EXPORT DATA
+# =========================================================
+
+with st.expander("📥 Export Data"):
 
     st.markdown(
-        f"""
-        <div class="insight-card">
-
-        <div class="insight-title">
-        🏢 TOP BRANCH
-        </div>
-
-        <div class="insight-value">
-        Branch {best_branch}
-        </div>
-
-        <div class="insight-small">
-        Sales: ${best_branch_sales:,.2f}
-        </div>
-
-        </div>
-        """,
+        '<p class="section-note">'
+        'Download the currently filtered dataset for further analysis.'
+        '</p>',
         unsafe_allow_html=True
     )
 
-with i3:
+    csv_data = filtered_df.to_csv(
+        index=False
+    ).encode("utf-8")
 
-    st.markdown(
-        f"""
-        <div class="insight-card">
-
-        <div class="insight-title">
-        👥 TOP CUSTOMER TYPE
-        </div>
-
-        <div class="insight-value">
-        {best_customer}
-        </div>
-
-        <div class="insight-small">
-        Top Payment: {best_payment}
-        </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True
+    st.download_button(
+        label="⬇️ Download Filtered Data",
+        data=csv_data,
+        file_name="supermarket_filtered_data.csv",
+        mime="text/csv"
     )
 
 # =========================================================
-# BUSINESS RECOMMENDATIONS
+# 7. ABOUT PROJECT
 # =========================================================
 
-st.markdown("### 📌 Business Recommendations")
+with st.expander("📌 About This Project"):
 
-recommendations = [
-    f"Focus marketing efforts on **{best_product}**, the highest-selling product line.",
-    f"Analyze the strategies of **Branch {best_branch}**, the strongest-performing branch.",
-    f"Strengthen loyalty initiatives for the **{best_customer}** customer segment.",
-    f"Monitor **{best_payment}** payment usage and maintain convenient payment options."
-]
+    col1, col2 = st.columns(2)
 
-for recommendation in recommendations:
+    with col1:
 
-    st.markdown(
-        f"• {recommendation}"
-    )
+        st.markdown(
+            """
+            ### 🎯 Project Objective
 
-# =========================================================
-# EXPORT DATA
-# =========================================================
+            This dashboard analyzes supermarket sales data to identify:
 
-st.markdown("---")
+            - Sales performance and trends
+            - Best-performing product lines
+            - Branch-wise performance
+            - Customer purchasing behavior
+            - Payment preferences
+            - Gender-wise sales patterns
+            - Customer ratings
+            """
+        )
 
-st.header("📥 Export Data")
+    with col2:
 
-st.markdown(
-    '<p class="section-note">Download the currently filtered dataset for further analysis.</p>',
-    unsafe_allow_html=True
-)
+        st.markdown(
+            """
+            ### 🛠️ Technologies Used
 
-csv_data = filtered_df.to_csv(
-    index=False
-).encode("utf-8")
+            - **Python**
+            - **Pandas**
+            - **Plotly**
+            - **Streamlit**
+            - **Data Analysis**
+            - **Exploratory Data Analysis (EDA)**
 
-st.download_button(
-    label="⬇️ Download Filtered Data",
-    data=csv_data,
-    file_name="supermarket_filtered_data.csv",
-    mime="text/csv"
-)
+            ### 📊 Dataset
 
-# =========================================================
-# ABOUT PROJECT
-# =========================================================
-
-st.markdown("---")
-
-st.header("📌 About This Project")
-
-col1, col2 = st.columns(2)
-
-with col1:
-
-    st.markdown(
-        """
-        ### 🎯 Project Objective
-
-        This dashboard analyzes supermarket sales data to identify:
-
-        - Sales performance and trends
-        - Best-performing product lines
-        - Branch-wise performance
-        - Customer purchasing behavior
-        - Payment preferences
-        - Gender-wise sales patterns
-        - Customer ratings
-        """
-    )
-
-with col2:
-
-    st.markdown(
-        """
-        ### 🛠️ Technologies Used
-
-        - **Python**
-        - **Pandas**
-        - **Plotly**
-        - **Streamlit**
-        - **Data Analysis**
-        - **Exploratory Data Analysis (EDA)**
-
-        ### 📊 Dataset
-
-        Supermarket Sales Dataset containing
-        transaction, customer, product and sales information.
-        """
-    )
+            Supermarket Sales Dataset containing
+            transaction, customer, product and sales information.
+            """
+        )
 
 # =========================================================
 # FOOTER
@@ -800,7 +819,7 @@ st.markdown("---")
 
 st.markdown(
     """
-    <div style="text-align:center; color:#64748b; padding:20px;">
+    <div class="footer">
         🛒 <b>Supermarket Sales Analytics</b><br>
         Built with Python, Pandas, Plotly & Streamlit
     </div>
